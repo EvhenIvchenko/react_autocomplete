@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import cn from 'classnames';
 import { Person } from '../../types/Person';
 import { debounce } from '../../utils/debounce';
 
@@ -7,6 +8,7 @@ type Props = {
   onSelect: (person: Person) => void;
   onReset: () => void;
   selectedPerson: Person | null;
+  delay?: number;
 };
 
 export const Autocomplete: React.FC<Props> = ({
@@ -14,12 +16,15 @@ export const Autocomplete: React.FC<Props> = ({
   onSelect,
   onReset,
   selectedPerson,
+  delay = 300,
 }) => {
   const [inputQuery, setInputQuery] = useState<string>('');
   const [delayedQuery, setDelayedQuery] = useState<string>('');
   const [showAutocomplete, setShowAutocomplete] = useState(false);
 
-  const setQueryDebounced = useCallback(debounce(setDelayedQuery, 1000), []);
+  const setQueryDebounced = useCallback(debounce(setDelayedQuery, delay), [
+    delay,
+  ]);
 
   const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
@@ -93,7 +98,14 @@ export const Autocomplete: React.FC<Props> = ({
                   }}
                   onMouseDown={e => e.preventDefault()}
                 >
-                  <p className="has-text-link">{person.name}</p>
+                  <p
+                    className={cn({
+                      'has-text-link': person.sex === 'm',
+                      'has-text-danger': person.sex === 'f',
+                    })}
+                  >
+                    {person.name}
+                  </p>
                 </a>
               );
             })}
